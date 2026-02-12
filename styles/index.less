@@ -129,16 +129,103 @@ body::before,
   }
 }
 
+@thread-selected-gradient: linear-gradient(
+  90deg,
+  fade(lighten(@accent-primary, 6%), 42%) 0%,
+  fade(@accent-primary, 24%) 35%,
+  fade(darken(@accent-primary, 4%), 12%) 72%,
+  fade(@accent-primary, 0%) 100%
+);
+
 .list-item.selected {
-  background-color: fade(@accent-primary, 20%) !important;
+  background-color: transparent !important;
+  background-image: @thread-selected-gradient !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
   box-shadow: inset 3px 0 0 @accent-primary;
 }
 
-.thread-list .list-item.selected {
+.thread-list .list-item.selected,
+.thread-list .list-item.selected:hover,
+.thread-list .list-item.selected.focused,
+.thread-list .list-item.focused.selected,
+.thread-list .list-item.focused,
+.thread-list .list-item.focused:hover {
+  background-color: transparent !important;
+  background-image: @thread-selected-gradient !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+
   // More prominent glow for the selected thread
   box-shadow:
     inset 4px 0 0 @accent-primary,
     0 0 20px fade(@accent-primary, 15%);
+}
+
+// In split layout, Mailspring uses a more specific selector that sets a solid blue.
+// Override it explicitly so selected rows keep the gradient.
+.thread-list.handler-split .list-item.selected,
+.thread-list.handler-split .list-item.selected:hover,
+.thread-list.handler-split .list-item.selected.focused,
+.thread-list.handler-split .list-item.focused.selected,
+.thread-list.handler-split .list-item.focused,
+.thread-list.handler-split .list-item.focused:hover {
+  background-color: transparent !important;
+  background-image: @thread-selected-gradient !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+}
+
+.thread-list.handler-split .list-item.selected:hover .list-column-HoverActions .inner,
+.thread-list.handler-split
+  .list-item.selected.focused:hover
+  .list-column-HoverActions
+  .inner,
+.thread-list .list-item.focused:hover .list-column-HoverActions .inner,
+.thread-list.handler-split
+  .list-item.focused:hover
+  .list-column-HoverActions
+  .inner {
+  background-image: linear-gradient(
+    to right,
+    fade(lighten(@accent-primary, 6%), 0%) 0%,
+    fade(@accent-primary, 24%) 50%,
+    fade(darken(@accent-primary, 4%), 12%) 100%
+  ) !important;
+}
+
+// Hard override for native list-tabular focus/selection backgrounds.
+// Higher specificity than `.list-container .list-item.focused/selected`.
+body .thread-list .list-container .list-item.selected,
+body .thread-list .list-container .list-item.selected:hover,
+body .thread-list .list-container .list-item.focused,
+body .thread-list .list-container .list-item.focused:hover,
+body .thread-list.handler-split .list-container .list-item.selected,
+body .thread-list.handler-split .list-container .list-item.selected:hover,
+body .thread-list.handler-split .list-container .list-item.focused,
+body .thread-list.handler-split .list-container .list-item.focused:hover {
+  background-color: transparent !important;
+  background-image: @thread-selected-gradient !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+}
+
+// Some Mailspring views paint inner row containers with a solid selected blue.
+// Force those inner blocks to stay transparent so the selected-row gradient remains visible.
+.thread-list .list-item.selected > *,
+.thread-list .list-item.selected:hover > *,
+.thread-list .list-item.selected.focused > *,
+.thread-list .list-item.focused.selected > *,
+.thread-list .list-item.focused > *,
+.thread-list .list-item.focused:hover > *,
+.thread-list .list-item.selected .list-column,
+.thread-list .list-item.selected:hover .list-column,
+.thread-list .list-item.selected.focused .list-column,
+.thread-list .list-item.focused.selected .list-column,
+.thread-list .list-item.focused .list-column,
+.thread-list .list-item.focused:hover .list-column {
+  background-color: transparent !important;
+  background-image: none !important;
 }
 
 // Input field focus glow
@@ -241,9 +328,11 @@ h3,
 }
 
 .list-item {
-  transition: background-color 0.15s ease-out;
+  transition:
+    background-color 0.15s ease-out,
+    background-image 0.15s ease-out;
 
-  &:hover {
+  &:hover:not(.selected) {
     background-color: fade(@accent-primary, 8%) !important;
   }
 }
