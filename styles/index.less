@@ -1,0 +1,279 @@
+/*
+Import our own variable file that inherits from Mailspring's base
+styles and overrides colors, margins, etc. to create our theme's
+overall design.
+
+Since most of the app uses these variables to style individual elements,
+we don't have to do much to create a totally different look.
+
+Note: This file needs to be named ui-variables.less so other
+stylesheets can call `@import "ui-variables";` and reference it.
+*/
+@import "ui-variables";
+
+/*
+After changing variables to set a base for our theme, we can use
+specific, narrowly-scoped CSS rules to change other things. 
+
+Tip: You can use the Developer Tools in Mailspring and "Inspect
+Element" to identify the DOM elements and styles you want to override.
+
+Tip: You only need to target the latest version of Chrome (eg Electron)
+here, so you can use modern CSS like -webkit-filter and -webkit-mask-image
+(which is used to make most of the icons in the app styleable via a
+background color.)
+*/
+.sheet-toolbar {
+  border-bottom: 1px solid @border-color-divider;
+  box-shadow: none;
+}
+
+.thread-icon:not(.thread-icon-unread):not(.thread-icon-star) {
+  -webkit-filter: invert(100%);
+}
+img.content-dark {
+  -webkit-filter: invert(100%);
+}
+img.content-light {
+  -webkit-filter: invert(100%);
+}
+
+.mail-label {
+  -webkit-filter: contrast(110%) brightness(85%);
+}
+
+#message-list .message-item-wrap .message-item-white-wrap {
+  box-shadow:
+    0 0 0.5px rgba(255, 255, 255, 0.28),
+    0 1px 1.5px rgba(255, 255, 255, 0.08);
+}
+
+.thread-list .list-item:not(.unread):not(.selected):not(.focused) {
+  color: #aaa;
+}
+
+/*
+=================================================================
+  GEMINI'S ENHANCEMENTS
+=================================================================
+*/
+
+/* 1. Add subtle noise texture for a premium feel */
+body,
+.sheet-frame,
+.sheet-toolbar,
+.panel {
+  position: relative;
+  z-index: 1; /* Ensure the container has a stacking context */
+}
+
+body::before,
+.sheet-frame::before,
+.sheet-toolbar::before,
+.panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1; /* Place the texture behind the content */
+  background: black;
+  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNiIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNub2lzZKSIvPjwvc3ZnPg==");
+  opacity: 0.03;
+}
+
+/* 2. Create Depth with Modern Shadows */
+.sheet-toolbar {
+  border-bottom: 1px solid @border-color-divider;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 1px 4px rgba(0, 0, 0, 0.05);
+  position: relative; // Needed for z-index to work
+  z-index: 10; // Bring toolbar to the front
+}
+
+.panel {
+  border-right: 1px solid @border-color-divider;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+#message-list .message-item-wrap .message-item-white-wrap {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid @border-color-primary;
+  transition:
+    box-shadow 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.07);
+  }
+}
+
+/* 3. Add "Glow" effect for interactive elements */
+
+.btn.btn-emphasis {
+  background: @accent-primary;
+  box-shadow: 0 0 15px @glow-color;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: lighten(@accent-primary, 5%);
+    box-shadow: 0 0 25px @glow-color;
+  }
+}
+
+.list-item.selected {
+  background-color: fade(@accent-primary, 20%) !important;
+  box-shadow: inset 3px 0 0 @accent-primary;
+}
+
+.thread-list .list-item.selected {
+  // More prominent glow for the selected thread
+  box-shadow:
+    inset 4px 0 0 @accent-primary,
+    0 0 20px fade(@accent-primary, 15%);
+}
+
+// Input field focus glow
+.editable.ProseMirror.is-focused,
+input[type="text"]:focus,
+textarea:focus {
+  border-color: @accent-primary;
+  box-shadow:
+    0 0 10px @glow-color,
+    inset 0 0 0 1px @accent-primary;
+}
+
+/* 4. Apply Modern Typography */
+
+body {
+  font-family: @font-family;
+  font-size: @font-size-base;
+}
+
+h1,
+.sheet-title {
+  font-size: @font-size-h1;
+  font-weight: 600;
+  line-height: @line-height-heading;
+  color: @text-color-heading;
+}
+
+h2 {
+  font-size: @font-size-h2;
+  font-weight: 600;
+  line-height: @line-height-heading;
+  color: @text-color-heading;
+}
+
+h3,
+.section-title {
+  font-size: @font-size-h3;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: @text-color-subtle;
+}
+
+.thread-subject {
+  font-size: @font-size-lg;
+  font-weight: 500;
+  color: @text-color;
+}
+
+.message-item-subject {
+  font-size: 15px; /* Slightly larger for readability */
+}
+
+.composer-subject input {
+  font-size: @font-size-h2;
+  padding: 20px;
+}
+
+/* 5. Enhance Composer Experience */
+
+.composer-sheet {
+  .composer-header {
+    background: @background-secondary;
+    padding: 15px 20px;
+  }
+
+  .composer-recipients {
+    .tokenizing-field .token,
+    .div-tokenizing-field .token {
+      background-color: @accent-primary;
+      color: @text-color-inverse;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+  }
+
+  .composer-body {
+    padding: 20px;
+    background: @background-primary;
+
+    .ProseMirror {
+      color: @text-color;
+      line-height: 1.6;
+    }
+  }
+
+  .composer-action-bar-wrap {
+    background: @background-secondary;
+    border-top: 1px solid @border-color-divider;
+  }
+}
+
+/* 6. Add Subtle Animations & Transitions */
+
+* {
+  // Smooth transitions for all properties
+  transition:
+    color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
+}
+
+.list-item {
+  transition: background-color 0.15s ease-out;
+
+  &:hover {
+    background-color: fade(@accent-primary, 8%) !important;
+  }
+}
+
+.btn {
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+a {
+  transition: color 0.15s ease-in-out;
+  &:hover {
+    color: lighten(@text-color-link, 10%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-list-wrap {
+  // Apply a subtle fade-in animation to the message list
+  animation: fadeIn 0.4s ease-out;
+}
