@@ -5,7 +5,7 @@ https://github.com/Foundry376/Mailspring/blob/master/app/static/style/base/ui-va
 @import "base/ui-variables";
 
 // =================================================================
-//  MODERNIZED COLOR PALETTE
+//  MATERIAL-INSPIRED DARK PALETTE
 // =================================================================
 
 //  Greys & Base Tones
@@ -18,25 +18,25 @@ https://github.com/Foundry376/Mailspring/blob/master/app/static/style/base/ui-va
 @white: #0a0a0a;
 
 //  Primary Accent Color
-@accent-primary: #4d9fff;
+@accent-primary: #64b5f6;
 @accent-primary-dark: darken(@accent-primary, 12%);
 
 //  Background Colors
-@background-primary: #1f232b;
-@background-off-primary: #252932;
-@background-secondary: #2a2e37;
-@background-tertiary: #5a6472;
+@background-primary: #121212;
+@background-off-primary: #1a1d24;
+@background-secondary: #1e222b;
+@background-tertiary: #2b303d;
 
 //  Border Colors
-@border-color-primary: lighten(@background-primary, 8%);
-@border-color-secondary: lighten(@background-secondary, 10%);
-@border-color-tertiary: lighten(@background-tertiary, 10%);
+@border-color-primary: fade(#ffffff, 9%);
+@border-color-secondary: fade(#ffffff, 12%);
+@border-color-tertiary: fade(#ffffff, 16%);
 @border-color-divider: @border-color-secondary;
 
 //  Text Colors
-@text-color: #e1e8f5;
-@text-color-subtle: fadeout(@text-color, 30%);
-@text-color-very-subtle: fadeout(@text-color, 50%);
+@text-color: #e6ebf4;
+@text-color-subtle: fadeout(@text-color, 36%);
+@text-color-very-subtle: fadeout(@text-color, 56%);
 @text-color-inverse: #ffffff;
 @text-color-inverse-subtle: fadeout(@text-color-inverse, 20%);
 @text-color-inverse-very-subtle: fadeout(@text-color-inverse, 50%);
@@ -48,15 +48,17 @@ https://github.com/Foundry376/Mailspring/blob/master/app/static/style/base/ui-va
 @text-color-link-active: @accent-primary-dark;
 
 //  UI Element Colors
-@btn-default-bg-color: lighten(@background-primary, 5%);
-@dropdown-default-bg-color: #2a2e37;
-@input-bg: #252932;
+@btn-default-bg-color: #232935;
+@dropdown-default-bg-color: #1f2430;
+@input-bg: #20252f;
 @input-border: @border-color-divider;
 
-@list-bg: #1f232b;
+@list-bg: #171b22;
 @list-border: @border-color-primary;
 @list-selected-color: @text-color-inverse;
 @list-focused-color: @text-color;
+@list-selected-bg: mix(@accent-primary, @list-bg, 20%);
+@list-focused-bg: mix(@accent-primary, @list-bg, 33%);
 
 @toolbar-background-color: @background-secondary;
 @panel-background-color: @background-off-primary;
@@ -65,10 +67,10 @@ https://github.com/Foundry376/Mailspring/blob/master/app/static/style/base/ui-va
 @glow-color: fade(@accent-primary, 40%);
 
 // =================================================================
-//  MODERNIZED TYPOGRAPHY
+//  MATERIAL-INSPIRED TYPOGRAPHY
 // =================================================================
-@font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-  Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+@font-family: "Roboto", "Noto Sans", "Segoe UI", -apple-system,
+  BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 
 @font-size-base: 14px;
 @font-size-sm: 12px;
@@ -80,3 +82,7 @@ https://github.com/Foundry376/Mailspring/blob/master/app/static/style/base/ui-va
 
 @line-height-base: 1.5;
 @line-height-heading: 1.2;
+
+//  Shape tokens
+@border-radius-base: 10px;
+@border-radius-large: 14px;

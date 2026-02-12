@@ -1,148 +1,101 @@
 /*
-Import our own variable file that inherits from Mailspring's base
-styles and overrides colors, margins, etc. to create our theme's
-overall design.
-
-Since most of the app uses these variables to style individual elements,
-we don't have to do much to create a totally different look.
-
-Note: This file needs to be named ui-variables.less so other
-stylesheets can call `@import "ui-variables";` and reference it.
+Material-inspired UI layer for DARK-VIBE.
 */
 @import "ui-variables";
 
-/*
-After changing variables to set a base for our theme, we can use
-specific, narrowly-scoped CSS rules to change other things. 
-
-Tip: You can use the Developer Tools in Mailspring and "Inspect
-Element" to identify the DOM elements and styles you want to override.
-
-Tip: You only need to target the latest version of Chrome (eg Electron)
-here, so you can use modern CSS like -webkit-filter and -webkit-mask-image
-(which is used to make most of the icons in the app styleable via a
-background color.)
-*/
-.sheet-toolbar {
-  border-bottom: 1px solid @border-color-divider;
-  box-shadow: none;
-}
-
-.thread-icon:not(.thread-icon-unread):not(.thread-icon-star) {
-  -webkit-filter: invert(100%);
-}
-img.content-dark {
-  -webkit-filter: invert(100%);
-}
-img.content-light {
-  -webkit-filter: invert(100%);
-}
-
-.mail-label {
-  -webkit-filter: contrast(110%) brightness(85%);
-}
-
-#message-list .message-item-wrap .message-item-white-wrap {
-  box-shadow:
-    0 0 0.5px rgba(255, 255, 255, 0.28),
-    0 1px 1.5px rgba(255, 255, 255, 0.08);
-}
-
-.thread-list .list-item:not(.unread):not(.selected):not(.focused) {
-  color: #aaa;
-}
-
-/*
-=================================================================
-  GEMINI'S ENHANCEMENTS
-=================================================================
-*/
-
-/* 1. Add subtle noise texture for a premium feel */
-body,
-.sheet-frame,
-.sheet-toolbar,
-.panel {
-  position: relative;
-  z-index: 1; /* Ensure the container has a stacking context */
-}
-
-body::before,
-.sheet-frame::before,
-.sheet-toolbar::before,
-.panel::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1; /* Place the texture behind the content */
-  background: black;
-  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNiIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNub2lzZKSIvPjwvc3ZnPg==");
-  opacity: 0.03;
-}
-
-/* 2. Create Depth with Modern Shadows */
-.sheet-toolbar {
-  border-bottom: 1px solid @border-color-divider;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.1),
-    0 1px 4px rgba(0, 0, 0, 0.05);
-  position: relative; // Needed for z-index to work
-  z-index: 10; // Bring toolbar to the front
-}
-
-.panel {
-  border-right: 1px solid @border-color-divider;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-#message-list .message-item-wrap .message-item-white-wrap {
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(0, 0, 0, 0.05);
-  border: 1px solid @border-color-primary;
-  transition:
-    box-shadow 0.2s ease-in-out,
-    transform 0.2s ease-in-out;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 6px 16px rgba(0, 0, 0, 0.1),
-      0 2px 8px rgba(0, 0, 0, 0.07);
-  }
-}
-
-/* 3. Add "Glow" effect for interactive elements */
-
-.btn.btn-emphasis {
-  background: @accent-primary;
-  box-shadow: 0 0 15px @glow-color;
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    background: lighten(@accent-primary, 5%);
-    box-shadow: 0 0 25px @glow-color;
-  }
-}
+@mui-surface-1: lighten(@background-primary, 4%);
+@mui-surface-2: lighten(@background-primary, 7%);
+@mui-surface-3: lighten(@background-primary, 10%);
+@mui-outline: fade(#ffffff, 12%);
+@mui-state-hover: fade(@accent-primary, 12%);
+@mui-state-focus: fade(@accent-primary, 18%);
+@mui-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.36);
+@mui-elevation-2: 0 6px 14px rgba(0, 0, 0, 0.34);
+@mui-elevation-3: 0 14px 26px rgba(0, 0, 0, 0.34);
 
 @thread-selected-gradient: linear-gradient(
   90deg,
-  fade(lighten(@accent-primary, 6%), 42%) 0%,
-  fade(@accent-primary, 24%) 35%,
-  fade(darken(@accent-primary, 4%), 12%) 72%,
+  fade(lighten(@accent-primary, 7%), 40%) 0%,
+  fade(@accent-primary, 26%) 38%,
+  fade(darken(@accent-primary, 8%), 12%) 74%,
   fade(@accent-primary, 0%) 100%
 );
 
+body,
+.sheet-frame {
+  font-family: @font-family;
+  font-size: @font-size-base;
+  color: @text-color;
+  background: linear-gradient(180deg, @background-primary 0%, #101216 100%);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheet-toolbar {
+  border-bottom: 1px solid @mui-outline;
+  background: linear-gradient(180deg, @mui-surface-2 0%, @mui-surface-1 100%);
+  box-shadow: @mui-elevation-1;
+  z-index: 10;
+}
+
+.panel {
+  border-right: 1px solid @mui-outline;
+  background: linear-gradient(180deg, @background-off-primary 0%, @background-primary 100%);
+}
+
+.thread-icon:not(.thread-icon-unread):not(.thread-icon-star),
+img.content-dark,
+img.content-light {
+  -webkit-filter: invert(100%) brightness(96%);
+}
+
+.mail-label {
+  -webkit-filter: contrast(105%) brightness(92%);
+}
+
+#message-list .message-item-wrap .message-item-white-wrap {
+  border: 1px solid fade(#ffffff, 10%);
+  border-radius: @border-radius-base;
+  background: linear-gradient(180deg, @mui-surface-1 0%, @background-secondary 100%);
+  box-shadow: @mui-elevation-1;
+  transition:
+    box-shadow 0.16s ease,
+    transform 0.16s ease,
+    border-color 0.16s ease;
+
+  &:hover {
+    border-color: fade(@accent-primary, 34%);
+    box-shadow: @mui-elevation-2;
+    transform: translateY(-1px);
+  }
+}
+
+.thread-list .list-item:not(.unread):not(.selected):not(.focused) {
+  color: fade(@text-color, 76%);
+}
+
+.thread-list .list-item,
+.draft-list .list-item {
+  border-bottom-color: fade(#ffffff, 8%);
+  background-color: @list-bg;
+}
+
+.list-item {
+  transition:
+    background-color 0.14s ease,
+    background-image 0.14s ease,
+    box-shadow 0.14s ease;
+
+  &:hover:not(.selected):not(.focused) {
+    background-color: @mui-state-hover !important;
+  }
+}
+
+// Keep clicked row in a gradient state even when Mailspring swaps selected/focused classes.
 .list-item.selected {
   background-color: transparent !important;
   background-image: @thread-selected-gradient !important;
   background-repeat: no-repeat !important;
   background-size: 100% 100% !important;
-  box-shadow: inset 3px 0 0 @accent-primary;
 }
 
 .thread-list .list-item.selected,
@@ -155,15 +108,11 @@ body::before,
   background-image: @thread-selected-gradient !important;
   background-repeat: no-repeat !important;
   background-size: 100% 100% !important;
-
-  // More prominent glow for the selected thread
   box-shadow:
-    inset 4px 0 0 @accent-primary,
-    0 0 20px fade(@accent-primary, 15%);
+    inset 3px 0 0 @accent-primary,
+    inset 0 0 0 1px fade(@accent-primary, 24%);
 }
 
-// In split layout, Mailspring uses a more specific selector that sets a solid blue.
-// Override it explicitly so selected rows keep the gradient.
 .thread-list.handler-split .list-item.selected,
 .thread-list.handler-split .list-item.selected:hover,
 .thread-list.handler-split .list-item.selected.focused,
@@ -189,13 +138,12 @@ body::before,
   background-image: linear-gradient(
     to right,
     fade(lighten(@accent-primary, 6%), 0%) 0%,
-    fade(@accent-primary, 24%) 50%,
-    fade(darken(@accent-primary, 4%), 12%) 100%
+    fade(@accent-primary, 22%) 50%,
+    fade(darken(@accent-primary, 6%), 10%) 100%
   ) !important;
 }
 
-// Hard override for native list-tabular focus/selection backgrounds.
-// Higher specificity than `.list-container .list-item.focused/selected`.
+// Higher specificity than native list-tabular selected/focused row styles.
 body .thread-list .list-container .list-item.selected,
 body .thread-list .list-container .list-item.selected:hover,
 body .thread-list .list-container .list-item.focused,
@@ -210,8 +158,7 @@ body .thread-list.handler-split .list-container .list-item.focused:hover {
   background-size: 100% 100% !important;
 }
 
-// Some Mailspring views paint inner row containers with a solid selected blue.
-// Force those inner blocks to stay transparent so the selected-row gradient remains visible.
+// Ensure internal row blocks don't repaint over the selected gradient.
 .thread-list .list-item.selected > *,
 .thread-list .list-item.selected:hover > *,
 .thread-list .list-item.selected.focused > *,
@@ -228,34 +175,60 @@ body .thread-list.handler-split .list-container .list-item.focused:hover {
   background-image: none !important;
 }
 
-// Input field focus glow
+.btn {
+  border-radius: @border-radius-base;
+  border: 1px solid fade(#ffffff, 11%);
+  background: linear-gradient(180deg, @mui-surface-3 0%, @mui-surface-1 100%);
+  box-shadow: @mui-elevation-1;
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    border-color 0.14s ease,
+    background-color 0.14s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: @mui-elevation-2;
+    border-color: fade(@accent-primary, 44%);
+  }
+}
+
+.btn.btn-emphasis {
+  border: 1px solid fade(lighten(@accent-primary, 8%), 55%);
+  background: linear-gradient(
+    180deg,
+    lighten(@accent-primary, 7%) 0%,
+    @accent-primary 52%,
+    darken(@accent-primary, 5%) 100%
+  );
+  color: @text-color-inverse;
+  box-shadow:
+    0 0 0 1px fade(@accent-primary, 28%),
+    0 8px 22px fade(@accent-primary, 36%);
+}
+
 .editable.ProseMirror.is-focused,
 input[type="text"]:focus,
 textarea:focus {
-  border-color: @accent-primary;
+  border-color: fade(lighten(@accent-primary, 8%), 70%);
+  background-color: mix(@input-bg, @accent-primary, 94%);
   box-shadow:
-    0 0 10px @glow-color,
-    inset 0 0 0 1px @accent-primary;
-}
-
-/* 4. Apply Modern Typography */
-
-body {
-  font-family: @font-family;
-  font-size: @font-size-base;
+    0 0 0 3px @mui-state-focus,
+    0 0 0 1px fade(@accent-primary, 70%);
 }
 
 h1,
 .sheet-title {
   font-size: @font-size-h1;
-  font-weight: 600;
+  font-weight: 500;
   line-height: @line-height-heading;
+  letter-spacing: 0.01em;
   color: @text-color-heading;
 }
 
 h2 {
   font-size: @font-size-h2;
-  font-weight: 600;
+  font-weight: 500;
   line-height: @line-height-heading;
   color: @text-color-heading;
 }
@@ -265,7 +238,7 @@ h3,
   font-size: @font-size-h3;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
   color: @text-color-subtle;
 }
 
@@ -276,34 +249,39 @@ h3,
 }
 
 .message-item-subject {
-  font-size: 15px; /* Slightly larger for readability */
+  font-size: 15px;
 }
-
-.composer-subject input {
-  font-size: @font-size-h2;
-  padding: 20px;
-}
-
-/* 5. Enhance Composer Experience */
 
 .composer-sheet {
+  background: @mui-surface-1;
+  border-radius: @border-radius-large;
+  box-shadow: @mui-elevation-2;
+  overflow: hidden;
+
   .composer-header {
-    background: @background-secondary;
-    padding: 15px 20px;
+    background: linear-gradient(180deg, @mui-surface-2 0%, @mui-surface-1 100%);
+    padding: 14px 18px;
+    border-bottom: 1px solid @mui-outline;
   }
 
   .composer-recipients {
     .tokenizing-field .token,
     .div-tokenizing-field .token {
-      background-color: @accent-primary;
+      background: linear-gradient(
+        180deg,
+        lighten(@accent-primary, 6%) 0%,
+        @accent-primary 100%
+      );
       color: @text-color-inverse;
-      border-radius: 6px;
+      border-radius: 999px;
+      border: 1px solid fade(lighten(@accent-primary, 14%), 46%);
+      box-shadow: 0 2px 8px fade(@accent-primary, 32%);
       font-weight: 500;
     }
   }
 
   .composer-body {
-    padding: 20px;
+    padding: 18px;
     background: @background-primary;
 
     .ProseMirror {
@@ -313,48 +291,24 @@ h3,
   }
 
   .composer-action-bar-wrap {
-    background: @background-secondary;
-    border-top: 1px solid @border-color-divider;
-  }
-}
-
-/* 6. Add Subtle Animations & Transitions */
-
-* {
-  // Smooth transitions for all properties
-  transition:
-    color 0.2s ease-in-out,
-    background-color 0.2s ease-in-out;
-}
-
-.list-item {
-  transition:
-    background-color 0.15s ease-out,
-    background-image 0.15s ease-out;
-
-  &:hover:not(.selected) {
-    background-color: fade(@accent-primary, 8%) !important;
-  }
-}
-
-.btn {
-  transition: all 0.2s ease-in-out;
-  &:hover {
-    transform: translateY(-1px);
+    background: @mui-surface-1;
+    border-top: 1px solid @mui-outline;
   }
 }
 
 a {
-  transition: color 0.15s ease-in-out;
+  color: @text-color-link;
+  transition: color 0.14s ease;
+
   &:hover {
     color: lighten(@text-color-link, 10%);
   }
 }
 
-@keyframes fadeIn {
+@keyframes muiFadeIn {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -363,6 +317,5 @@ a {
 }
 
 .message-list-wrap {
-  // Apply a subtle fade-in animation to the message list
-  animation: fadeIn 0.4s ease-out;
+  animation: muiFadeIn 0.28s ease-out;
 }
