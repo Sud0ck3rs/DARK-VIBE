@@ -1,321 +1,1845 @@
 /*
-Material-inspired UI layer for DARK-VIBE.
+DARK-VIBE — component layer.
+
+  0. Foundations      root, selection, scrollbars, focus, icon inversion
+  1. Layout           columns, toolbars, separators
+  2. Navigation       sidebar, folders, counters, notifications, activity
+  3. Thread list      rows, states, icons, labels, quick actions, selection bar
+  4. Reading          message pane, cards, headers, attachments, sidebar
+  5. Composer         card, fields, tokens, editor, action bar
+  6. Controls         buttons, inputs, search, menus, popovers, switches, toasts
+  7. Preferences & modals
+  8. Blurred window
+  9. Bundled plugins  reminders, link tracking, templates
+
+Only what Mailspring paints differently is overridden. Selectors mirror the
+core ones so the theme (loaded after core) wins ties without `!important`,
+except where core itself relies on `!important` or inline styles.
 */
 @import "ui-variables";
 
-@mui-surface-1: lighten(@background-primary, 4%);
-@mui-surface-2: lighten(@background-primary, 7%);
-@mui-surface-3: lighten(@background-primary, 10%);
-@mui-outline: fade(#ffffff, 12%);
-@mui-state-hover: fade(@accent-primary, 12%);
-@mui-state-focus: fade(@accent-primary, 18%);
-@mui-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.36);
-@mui-elevation-2: 0 6px 14px rgba(0, 0, 0, 0.34);
-@mui-elevation-3: 0 14px 26px rgba(0, 0, 0, 0.34);
+// =============================================================================
+//  0. Foundations
+// =============================================================================
 
-@thread-selected-gradient: linear-gradient(
-  90deg,
-  fade(lighten(@accent-primary, 7%), 40%) 0%,
-  fade(@accent-primary, 26%) 38%,
-  fade(darken(@accent-primary, 8%), 12%) 74%,
-  fade(@accent-primary, 0%) 100%
-);
-
-body,
-.sheet-frame {
-  font-family: @font-family;
-  font-size: @font-size-base;
-  color: @text-color;
-  background: linear-gradient(180deg, @background-primary 0%, #101216 100%);
-  -webkit-font-smoothing: antialiased;
+// Native controls opt into the dark colour scheme one by one. Never declare it
+// on :root/body: an inherited dark scheme makes Chromium paint an opaque white
+// backdrop behind every light-scheme iframe (email bodies, theme previews),
+// which hides light text on plain emails.
+select,
+input,
+textarea {
+  color-scheme: dark;
 }
 
-.sheet-toolbar {
-  border-bottom: 1px solid @mui-outline;
-  background: linear-gradient(180deg, @mui-surface-2 0%, @mui-surface-1 100%);
-  box-shadow: @mui-elevation-1;
-  z-index: 10;
+body {
+  background: @dv-n-850;
+  accent-color: @dv-accent;
 }
 
-.panel {
-  border-right: 1px solid @mui-outline;
-  background: linear-gradient(180deg, @background-off-primary 0%, @background-primary 100%);
+mailspring-workspace,
+.sheet {
+  background-color: @dv-n-850;
 }
 
-.thread-icon:not(.thread-icon-unread):not(.thread-icon-star),
-img.content-dark,
-img.content-light {
-  -webkit-filter: invert(100%) brightness(96%);
+::selection {
+  background: fade(@dv-accent, 30%);
 }
 
-.mail-label {
-  -webkit-filter: contrast(105%) brightness(92%);
-}
-
-#message-list .message-item-wrap .message-item-white-wrap {
-  border: 1px solid fade(#ffffff, 10%);
-  border-radius: @border-radius-base;
-  background: linear-gradient(180deg, @mui-surface-1 0%, @background-secondary 100%);
-  box-shadow: @mui-elevation-1;
-  transition:
-    box-shadow 0.16s ease,
-    transform 0.16s ease,
-    border-color 0.16s ease;
-
-  &:hover {
-    border-color: fade(@accent-primary, 34%);
-    box-shadow: @mui-elevation-2;
-    transform: translateY(-1px);
-  }
-}
-
-.thread-list .list-item:not(.unread):not(.selected):not(.focused) {
-  color: fade(@text-color, 76%);
-}
-
-.thread-list .list-item,
-.draft-list .list-item {
-  border-bottom-color: fade(#ffffff, 8%);
-  background-color: @list-bg;
-}
-
-.list-item {
-  transition:
-    background-color 0.14s ease,
-    background-image 0.14s ease,
-    box-shadow 0.14s ease;
-
-  &:hover:not(.selected):not(.focused) {
-    background-color: @mui-state-hover !important;
-  }
-}
-
-// Keep clicked row in a gradient state even when Mailspring swaps selected/focused classes.
-.list-item.selected {
-  background-color: transparent !important;
-  background-image: @thread-selected-gradient !important;
-  background-repeat: no-repeat !important;
-  background-size: 100% 100% !important;
-}
-
-.thread-list .list-item.selected,
-.thread-list .list-item.selected:hover,
-.thread-list .list-item.selected.focused,
-.thread-list .list-item.focused.selected,
-.thread-list .list-item.focused,
-.thread-list .list-item.focused:hover {
-  background-color: transparent !important;
-  background-image: @thread-selected-gradient !important;
-  background-repeat: no-repeat !important;
-  background-size: 100% 100% !important;
-  box-shadow:
-    inset 3px 0 0 @accent-primary,
-    inset 0 0 0 1px fade(@accent-primary, 24%);
-}
-
-.thread-list.handler-split .list-item.selected,
-.thread-list.handler-split .list-item.selected:hover,
-.thread-list.handler-split .list-item.selected.focused,
-.thread-list.handler-split .list-item.focused.selected,
-.thread-list.handler-split .list-item.focused,
-.thread-list.handler-split .list-item.focused:hover {
-  background-color: transparent !important;
-  background-image: @thread-selected-gradient !important;
-  background-repeat: no-repeat !important;
-  background-size: 100% 100% !important;
-}
-
-.thread-list.handler-split .list-item.selected:hover .list-column-HoverActions .inner,
-.thread-list.handler-split
-  .list-item.selected.focused:hover
-  .list-column-HoverActions
-  .inner,
-.thread-list .list-item.focused:hover .list-column-HoverActions .inner,
-.thread-list.handler-split
-  .list-item.focused:hover
-  .list-column-HoverActions
-  .inner {
-  background-image: linear-gradient(
-    to right,
-    fade(lighten(@accent-primary, 6%), 0%) 0%,
-    fade(@accent-primary, 22%) 50%,
-    fade(darken(@accent-primary, 6%), 10%) 100%
-  ) !important;
-}
-
-// Higher specificity than native list-tabular selected/focused row styles.
-body .thread-list .list-container .list-item.selected,
-body .thread-list .list-container .list-item.selected:hover,
-body .thread-list .list-container .list-item.focused,
-body .thread-list .list-container .list-item.focused:hover,
-body .thread-list.handler-split .list-container .list-item.selected,
-body .thread-list.handler-split .list-container .list-item.selected:hover,
-body .thread-list.handler-split .list-container .list-item.focused,
-body .thread-list.handler-split .list-container .list-item.focused:hover {
-  background-color: transparent !important;
-  background-image: @thread-selected-gradient !important;
-  background-repeat: no-repeat !important;
-  background-size: 100% 100% !important;
-}
-
-// Ensure internal row blocks don't repaint over the selected gradient.
-.thread-list .list-item.selected > *,
-.thread-list .list-item.selected:hover > *,
-.thread-list .list-item.selected.focused > *,
-.thread-list .list-item.focused.selected > *,
-.thread-list .list-item.focused > *,
-.thread-list .list-item.focused:hover > *,
-.thread-list .list-item.selected .list-column,
-.thread-list .list-item.selected:hover .list-column,
-.thread-list .list-item.selected.focused .list-column,
-.thread-list .list-item.focused.selected .list-column,
-.thread-list .list-item.focused .list-column,
-.thread-list .list-item.focused:hover .list-column {
-  background-color: transparent !important;
-  background-image: none !important;
-}
-
-.btn {
-  border-radius: @border-radius-base;
-  border: 1px solid fade(#ffffff, 11%);
-  background: linear-gradient(180deg, @mui-surface-3 0%, @mui-surface-1 100%);
-  box-shadow: @mui-elevation-1;
-  transition:
-    transform 0.14s ease,
-    box-shadow 0.14s ease,
-    border-color 0.14s ease,
-    background-color 0.14s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: @mui-elevation-2;
-    border-color: fade(@accent-primary, 44%);
-  }
-}
-
-.btn.btn-emphasis {
-  border: 1px solid fade(lighten(@accent-primary, 8%), 55%);
-  background: linear-gradient(
-    180deg,
-    lighten(@accent-primary, 7%) 0%,
-    @accent-primary 52%,
-    darken(@accent-primary, 5%) 100%
-  );
-  color: @text-color-inverse;
-  box-shadow:
-    0 0 0 1px fade(@accent-primary, 28%),
-    0 8px 22px fade(@accent-primary, 36%);
-}
-
-.editable.ProseMirror.is-focused,
-input[type="text"]:focus,
-textarea:focus {
-  border-color: fade(lighten(@accent-primary, 8%), 70%);
-  background-color: mix(@input-bg, @accent-primary, 94%);
-  box-shadow:
-    0 0 0 3px @mui-state-focus,
-    0 0 0 1px fade(@accent-primary, 70%);
-}
-
-h1,
-.sheet-title {
-  font-size: @font-size-h1;
-  font-weight: 500;
-  line-height: @line-height-heading;
-  letter-spacing: 0.01em;
-  color: @text-color-heading;
-}
-
-h2 {
-  font-size: @font-size-h2;
-  font-weight: 500;
-  line-height: @line-height-heading;
-  color: @text-color-heading;
-}
-
-h3,
-.section-title {
-  font-size: @font-size-h3;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: @text-color-subtle;
-}
-
-.thread-subject {
-  font-size: @font-size-lg;
-  font-weight: 500;
-  color: @text-color;
-}
-
-.message-item-subject {
-  font-size: 15px;
-}
-
-.composer-sheet {
-  background: @mui-surface-1;
-  border-radius: @border-radius-large;
-  box-shadow: @mui-elevation-2;
-  overflow: hidden;
-
-  .composer-header {
-    background: linear-gradient(180deg, @mui-surface-2 0%, @mui-surface-1 100%);
-    padding: 14px 18px;
-    border-bottom: 1px solid @mui-outline;
-  }
-
-  .composer-recipients {
-    .tokenizing-field .token,
-    .div-tokenizing-field .token {
-      background: linear-gradient(
-        180deg,
-        lighten(@accent-primary, 6%) 0%,
-        @accent-primary 100%
-      );
-      color: @text-color-inverse;
-      border-radius: 999px;
-      border: 1px solid fade(lighten(@accent-primary, 14%), 46%);
-      box-shadow: 0 2px 8px fade(@accent-primary, 32%);
-      font-weight: 500;
-    }
-  }
-
-  .composer-body {
-    padding: 18px;
-    background: @background-primary;
-
-    .ProseMirror {
-      color: @text-color;
-      line-height: 1.6;
-    }
-  }
-
-  .composer-action-bar-wrap {
-    background: @mui-surface-1;
-    border-top: 1px solid @mui-outline;
-  }
+:focus-visible {
+  outline: 2px solid fade(@dv-accent, 70%);
+  outline-offset: 1px;
 }
 
 a {
-  color: @text-color-link;
-  transition: color 0.14s ease;
+  color: @dv-accent;
+  transition: color @dv-fast @dv-ease;
+}
+a:hover {
+  color: lighten(@dv-accent, 8%);
+}
+
+// Native scrollbars
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: fade(#ffffff, 12%);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 6px;
 
   &:hover {
-    color: lighten(@text-color-link, 10%);
+    background: fade(#ffffff, 22%);
+    background-clip: padding-box;
   }
 }
 
-@keyframes muiFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
+// Overlay scrollbar used by lists and the reading pane
+.scrollbar-track {
+  width: 12px;
+  padding: 2px;
+  background: transparent;
+  border-left: 0;
+
+  .scrollbar-handle {
+    background-color: fade(#ffffff, 14%);
+    border: 0;
+    border-radius: @dv-radius;
+    transition: background-color @dv-fast @dv-ease;
   }
-  to {
+
+  &:hover .scrollbar-handle,
+  &.dragging .scrollbar-handle {
+    background-color: fade(#ffffff, 26%);
+    border: 0;
+  }
+}
+
+// Mailspring ships dark bitmaps for light themes: invert the neutral ones.
+img.content-dark,
+img.content-light,
+.thread-icon:not(.thread-icon-unread):not(.thread-icon-star),
+#message-list .collapsed-attachment {
+  filter: invert(100%) opacity(0.85);
+}
+
+// =============================================================================
+//  1. Layout — columns & toolbars
+// =============================================================================
+
+.column-RootSidebar {
+  background-color: @dv-n-900;
+}
+
+.column-ThreadList,
+.column-DraftList,
+.column-MessageList,
+.column-Center {
+  background-color: @dv-n-850;
+}
+
+.column-MessageListSidebar {
+  background-color: @dv-n-850;
+  border-left: 1px solid @dv-line;
+  color: @dv-text-secondary;
+}
+
+.flexbox-handle-horizontal div {
+  box-shadow: 0.5px 0 0 @dv-line;
+}
+
+.sheet-toolbar {
+  border-bottom: 1px solid @dv-line;
+}
+
+// Each column toolbar paints the surface of the column below it.
+.sheet-toolbar-container,
+body.platform-linux .sheet-toolbar-container,
+body.platform-win32 .sheet-toolbar-container {
+  background: @dv-n-850;
+  background-image: none;
+  color: @dv-text-strong;
+}
+
+.toolbar-RootSidebar {
+  background-color: @dv-n-900;
+  box-shadow: inset -1px 0 0 @dv-line;
+}
+
+.sheet-toolbar-container.mode-split .toolbar-MessageList,
+.toolbar-MessageListSidebar {
+  box-shadow: inset 1px 0 0 @dv-line;
+}
+
+.sheet-toolbar .item-back .item-back-title {
+  font-size: 15px;
+  font-weight: @font-weight-medium;
+  color: @dv-text-strong;
+}
+
+// =============================================================================
+//  2. Navigation — sidebar
+// =============================================================================
+
+.account-sidebar {
+  background-color: @dv-n-900;
+}
+
+.outline-view {
+  .heading {
+    padding: 14px 8px 4px 24px;
+    font-size: 11px;
+    font-weight: @font-weight-semi-bold;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: @dv-text-faint;
+
+    .add-item-button img {
+      background: @dv-text-faint;
+    }
+    .collapse-button {
+      font-size: 11px;
+      font-weight: @font-weight-medium;
+      letter-spacing: 0;
+      text-transform: none;
+      color: @dv-text-faint;
+    }
+  }
+
+  .item {
+    height: 28px;
+    margin: 1px 8px 1px 0;
+    padding: 0 8px 0 4px;
+    border-radius: @dv-radius;
+    color: @dv-text-secondary;
+    font-size: 13.5px;
+    transition: background-color @dv-fast @dv-ease, color @dv-fast @dv-ease;
+
+    img.content-mask {
+      background-color: @dv-text-muted;
+      transition: background-color @dv-fast @dv-ease;
+    }
+    .icon {
+      padding-right: 8px;
+    }
+
+    // Counters
+    .item-count-box {
+      min-width: 18px;
+      height: 18px;
+      padding: 0 6px;
+      margin-left: 8px;
+      border-radius: @dv-radius-pill;
+      background: fade(#ffffff, 7%);
+      box-shadow: none;
+      color: @dv-text-muted;
+      font-size: 11px;
+      font-weight: @font-weight-semi-bold;
+      font-variant-numeric: tabular-nums;
+      line-height: 18px;
+      text-align: center;
+    }
+    .item-count-box.alt-count {
+      background: @dv-accent;
+      color: @dv-on-accent-light;
+    }
+
+    .item-action-button {
+      border-radius: @dv-radius-sm;
+      color: @dv-text-faint;
+    }
+
+    &:hover {
+      background-color: @dv-hover;
+      color: @dv-text;
+
+      img.content-mask {
+        background-color: @dv-text-secondary;
+      }
+    }
+
+    &.selected {
+      background-color: @dv-accent-tint;
+      color: @dv-accent;
+
+      img.content-mask {
+        background-color: @dv-accent;
+      }
+      .item-count-box {
+        background: fade(@dv-accent, 18%);
+        color: @dv-accent;
+      }
+      .item-count-box.alt-count {
+        background: @dv-accent;
+        color: @dv-on-accent-light;
+      }
+      &:hover {
+        background-color: @dv-accent-tint-strong;
+      }
+    }
+
+    &.dropping {
+      background-color: @dv-accent-tint-strong;
+      color: @dv-accent;
+
+      img.content-mask {
+        background-color: @dv-accent;
+      }
+    }
+  }
+
+  .item-container.dropping {
+    background-color: transparent;
+  }
+
+  .item-children {
+    padding-left: 14px;
+  }
+}
+
+.account-switcher {
+  top: 9px;
+  right: 12px;
+  opacity: 0.55;
+  transition: opacity @dv-fast @dv-ease;
+
+  &:hover {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-.message-list-wrap {
-  animation: muiFadeIn 0.28s ease-out;
+.disclosure-triangle div {
+  border-left-color: @dv-text-faint;
+}
+
+// Notifications & sync activity (bottom of the sidebar)
+.notifications {
+  background-color: @dv-n-900;
+  box-shadow: none;
+}
+
+.notification {
+  margin: 8px;
+  border-radius: @dv-radius-lg;
+  background: @dv-accent-fill;
+  box-shadow: @dv-shadow-2;
+
+  .action {
+    border-top: 1px solid fade(#ffffff, 16%);
+    border-left: 1px solid fade(#ffffff, 16%);
+    border-bottom-left-radius: @dv-radius-lg;
+    border-bottom-right-radius: @dv-radius-lg;
+
+    &:hover {
+      background-color: fade(#ffffff, 12%);
+      box-shadow: none;
+    }
+  }
+}
+.notification.error {
+  background: #b93a4a;
+}
+.notification.offline {
+  background: #8f6a16;
+}
+
+.notifications-sticky .notification-info {
+  background-color: @dv-accent-fill;
+}
+
+.sidebar-activity {
+  background: @dv-n-900;
+  color: @dv-text-muted;
+  box-shadow: inset 0 1px 0 @dv-line;
+
+  .item .inner {
+    border-bottom-color: @dv-line-subtle;
+  }
+  .item .sync-activity .account {
+    border-bottom-color: @dv-line-subtle;
+  }
+}
+
+// =============================================================================
+//  3. Thread list & draft list
+// =============================================================================
+
+.list-tabular .list-tabular-item {
+  border-bottom-color: @dv-line-subtle;
+  border-left-color: transparent;
+
+  &.keyboard-cursor {
+    border-left-color: fade(@dv-accent, 60%);
+  }
+
+  .checkmark .inner {
+    border-color: fade(#ffffff, 24%);
+    border-radius: @dv-radius-sm;
+  }
+  &.selected .checkmark .inner {
+    background-color: @dv-accent-fill;
+  }
+  &.selected.focused .checkmark .inner {
+    background-color: @dv-n-900;
+  }
+}
+
+.thread-list,
+.draft-list {
+  .list-item {
+    background-color: @list-bg;
+    border-bottom: 1px solid @dv-line-subtle;
+    color: @dv-text;
+  }
+
+  // Read rows recede, unread rows lift
+  .list-item:not(.unread):not(.selected):not(.focused) {
+    color: fade(@dv-text, 76%);
+  }
+  .list-item:hover {
+    background-color: @list-hover-bg;
+  }
+  .list-item.unread:not(.focused):not(.selected) {
+    background-color: @list-unread-bg;
+  }
+  .list-item.unread:not(.focused):not(.selected):hover {
+    background-color: @list-unread-hover-bg;
+  }
+  .list-item.unread:not(.focused) .subject {
+    font-weight: @font-weight-semi-bold;
+  }
+
+  // Multi-selection (list layout)
+  .list-item.selected:not(.focused) {
+    background-color: @list-selected-bg;
+    border-bottom-color: @list-selected-border;
+    color: @dv-text;
+  }
+  .list-item.next-is-selected {
+    border-bottom-color: @list-selected-border;
+  }
+
+  // Opened thread: accent bar + soft tint with a short glow from the bar
+  .list-item.focused,
+  .list-item.focused:hover {
+    background-color: @list-focused-bg;
+    background-image: linear-gradient(90deg, @list-focused-glow 0, @list-focused-bg 180px);
+    border-left-color: @dv-accent;
+    border-bottom-color: @list-focused-border;
+    color: @text-color-inverse;
+  }
+
+  // Row content
+  .list-item .snippet {
+    opacity: 0.62;
+  }
+  .list-item .timestamp {
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
+  }
+  .participants.no-recipients {
+    color: @dv-text-muted;
+  }
+
+  .message-count {
+    display: inline-block;
+    min-width: 18px;
+    padding: 0 6px;
+    margin-left: 8px;
+    border-radius: @dv-radius-pill;
+    background: fade(#ffffff, 8%);
+    color: @dv-text-muted;
+    font-size: 11px;
+    font-weight: @font-weight-medium;
+    line-height: 18px;
+    text-align: center;
+  }
+  .list-item.focused .message-count {
+    background: fade(#ffffff, 14%);
+    color: @text-color-inverse;
+  }
+
+  // Unread indicator drawn in CSS (accent-coloured, no bitmap)
+  .thread-icon.thread-icon-unread {
+    background-image: radial-gradient(circle at center, @dv-accent 0, @dv-accent 4px, fade(@dv-accent, 0%) 4.75px);
+  }
+}
+
+// Split layout: the selected row is the opened one
+.thread-list.handler-split .list-item.selected,
+.thread-list.handler-split .list-item.selected:hover {
+  background-color: @list-focused-bg;
+  background-image: linear-gradient(90deg, @list-focused-glow 0, @list-focused-bg 180px);
+  border-left-color: @dv-accent;
+  border-bottom-color: @list-focused-border;
+  color: @text-color-inverse;
+}
+.thread-list.handler-split .list-item.selected .message-count {
+  background: fade(#ffffff, 14%);
+  color: @text-color-inverse;
+}
+
+// Labels: keep each label's hue, flip it to a dark chip with light text
+.mail-label {
+  border-radius: @dv-radius-sm;
+  font-weight: @font-weight-medium;
+  line-height: 20px;
+  filter: invert(1) hue-rotate(180deg) saturate(1.2);
+}
+.thread-list .list-item.focused .mail-label,
+.thread-list.handler-split .list-item.selected .mail-label,
+.draft-list .list-item.focused .mail-label {
+  filter: none !important;
+  background: fade(#000000, 24%) !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px fade(#ffffff, 14%) !important;
+
+  .x {
+    background-color: #ffffff !important;
+  }
+}
+
+// Quick actions revealed on hover (archive / trash / snooze)
+.thread-list .list-item:hover .list-column-HoverActions .inner {
+  background-image: linear-gradient(to right, fade(@list-hover-bg, 0%) 0%, @list-hover-bg 40%, @list-hover-bg 100%);
+}
+.thread-list .list-item.unread:not(.focused):not(.selected):hover .list-column-HoverActions .inner {
+  background-image: linear-gradient(to right, fade(@list-unread-hover-bg, 0%) 0%, @list-unread-hover-bg 40%, @list-unread-hover-bg 100%);
+}
+.thread-list .list-item .list-column-HoverActions .action {
+  border: 0;
+  border-radius: 12px; // rendered at zoom .5
+  box-shadow: none;
+  filter: invert(100%) opacity(0.72);
+  transition: filter @dv-fast @dv-ease, background-color @dv-fast @dv-ease;
+
+  &:hover {
+    filter: invert(100%) opacity(1);
+    background-color: fade(#ffffff, 12%);
+  }
+}
+.thread-list .list-item.focused:hover .list-column-HoverActions .inner .action:hover,
+.thread-list.handler-split .list-item.selected:hover .list-column-HoverActions .inner .action:hover {
+  background-color: fade(#ffffff, 14%);
+}
+
+// Multi-select toolbar overlay
+.sheet-toolbar .selection-bar .absolute {
+  background-color: @dv-n-850;
+  border-left-color: @dv-line;
+  border-right-color: @dv-line;
+
+  .inner .centered {
+    color: @dv-text-muted;
+    font-weight: @font-weight-medium;
+  }
+}
+
+// =============================================================================
+//  4. Reading pane
+// =============================================================================
+
+#message-list {
+  background: @dv-n-850;
+
+  .messages-wrap .scroll-region-content-inner {
+    padding: 4px 16px 56px;
+  }
+
+  // Thread subject
+  .message-subject-wrap {
+    margin: 6px auto 10px;
+    padding: 8px 20px 0;
+  }
+  .message-subject {
+    font-size: 18px;
+    font-weight: @font-weight-semi-bold;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: @dv-text-strong;
+  }
+  .message-icons-wrap img {
+    background: @dv-text-muted;
+    transition: background-color @dv-fast @dv-ease;
+  }
+  .message-icons-wrap > div:hover img {
+    background: @dv-accent;
+  }
+
+  // Message cards
+  .message-item-wrap {
+    .message-item-white-wrap {
+      background: @dv-n-750;
+      border: 1px solid @dv-line;
+      border-radius: @dv-radius-lg;
+      box-shadow: @dv-shadow-1;
+      transition: background-color @dv-fast @dv-ease, border-color @dv-fast @dv-ease;
+    }
+
+    &.collapsed .message-item-white-wrap {
+      background-color: @dv-n-800;
+      box-shadow: none;
+    }
+    &.collapsed:hover .message-item-white-wrap {
+      background-color: @dv-n-750;
+      border-color: @dv-line-strong;
+    }
+    &.collapsed .message-item-area {
+      .collapsed-from {
+        color: @dv-text-secondary;
+      }
+      .collapsed-snippet {
+        color: @dv-text-muted;
+      }
+      .collapsed-timestamp {
+        color: @dv-text-faint;
+      }
+    }
+  }
+
+  .message-item-divider {
+    height: 1px;
+    border-top: 1px solid @dv-line;
+    border-bottom: 0;
+    background: transparent;
+  }
+
+  .minified-bundle {
+    .num-messages {
+      background: @dv-n-700;
+      border: 1px solid @dv-line-strong;
+      border-radius: @dv-radius-pill;
+      box-shadow: @dv-shadow-1;
+      color: @dv-text-secondary;
+      font-size: 12px;
+    }
+    .msg-line {
+      background-color: @dv-n-800;
+      border-top-color: @dv-line;
+      border-radius: @dv-radius-lg @dv-radius-lg 0 0;
+      box-shadow: none;
+    }
+  }
+
+  // Header
+  .message-header {
+    padding-top: 18px;
+
+    .message-time,
+    .message-indicator {
+      color: @dv-text-faint;
+      font-variant-numeric: tabular-nums;
+    }
+    .header-row {
+      color: @dv-text-muted;
+    }
+
+    .message-actions {
+      border: 1px solid @dv-line;
+      border-radius: @dv-radius;
+      background: fade(#ffffff, 3%);
+
+      .btn-icon {
+        opacity: 0.8;
+        border-right-color: @dv-line;
+        transition: opacity @dv-fast @dv-ease, background-color @dv-fast @dv-ease;
+
+        &:first-child {
+          border-radius: 5px 0 0 5px;
+        }
+        &:last-child {
+          border-radius: 0 5px 5px 0;
+        }
+        &:hover {
+          opacity: 1;
+          background: @dv-hover;
+        }
+      }
+    }
+  }
+
+  .header-toggle-control img {
+    background: @dv-text-faint;
+  }
+
+  .message-item-area {
+    padding: 0 20px 16px;
+  }
+
+  // "Write a reply…" footer
+  .footer-reply-area-wrap {
+    background: @dv-n-750;
+    border: 1px solid @dv-line;
+    border-top: 1px dashed @dv-line-strong;
+    border-radius: 0 0 @dv-radius-lg @dv-radius-lg;
+    box-shadow: @dv-shadow-1;
+    color: @dv-text-muted;
+    transition: background-color @dv-fast @dv-ease, color @dv-fast @dv-ease;
+
+    img.content-mask {
+      background-color: @dv-text-muted;
+      transition: background-color @dv-fast @dv-ease;
+    }
+    &:hover {
+      background: @dv-n-700;
+      color: @dv-text-secondary;
+
+      img.content-mask {
+        background-color: @dv-text-secondary;
+      }
+    }
+  }
+
+  .show-hidden-messages {
+    background-color: @dv-n-800;
+    border-color: @dv-line;
+    color: @dv-text-muted;
+  }
+  .message-body-error {
+    background-color: @dv-n-800;
+    border-color: @dv-line;
+    border-radius: @dv-radius;
+  }
+}
+
+.message-participants .from-contact {
+  color: @dv-text-strong;
+}
+
+.find-in-thread {
+  background: @dv-n-850;
+
+  &.enabled {
+    border-bottom-color: @dv-line;
+  }
+  .selection-progress {
+    color: @dv-text-faint;
+  }
+}
+
+// Attachments
+.nylas-attachment-item {
+  .file-info-wrap {
+    background-color: @dv-n-700;
+    border-color: @dv-line-strong;
+
+    .file-name {
+      color: @dv-text;
+    }
+    .file-size {
+      color: @dv-text-faint;
+    }
+  }
+  .file-action-icon {
+    background-color: @dv-n-700;
+    border-color: @dv-line-strong;
+    transition: background-color @dv-fast @dv-ease;
+
+    img {
+      background-color: @dv-text-secondary;
+    }
+    &:hover {
+      background-color: @dv-n-650;
+    }
+    &:active {
+      background-color: @dv-n-600;
+    }
+  }
+  .file-thumbnail-preview {
+    background: @dv-n-800;
+    border-color: @dv-line-strong;
+  }
+}
+
+.download-all {
+  color: @dv-text-muted;
+
+  img {
+    background-color: @dv-text-muted;
+  }
+  .download-all-action:hover {
+    color: @dv-accent;
+
+    img {
+      background-color: @dv-accent;
+    }
+  }
+}
+
+// Contact sidebar (right column)
+.sidebar-section {
+  background: @dv-n-750;
+  border-color: @dv-line;
+
+  h2 {
+    color: @dv-text-faint;
+
+    &:after {
+      height: 1px;
+      bottom: -8px;
+      background-image: none;
+      background-color: @dv-line;
+    }
+  }
+}
+.related-threads {
+  border-top-color: @dv-line;
+
+  .related-thread,
+  .toggle {
+    border-top-color: @dv-line-subtle;
+  }
+}
+.company-profile {
+  border-top-color: @dv-line;
+}
+
+// =============================================================================
+//  5. Composer
+// =============================================================================
+
+// Inline composer card (reply / forward inside the thread)
+#message-list .message-item-wrap .message-item-white-wrap.composer-outer-wrap {
+  background: @dv-n-750;
+
+  .show-more-fade {
+    background: linear-gradient(to right, fade(@dv-n-750, 0%) 0%, @dv-n-750 40%);
+  }
+  .composer-action-bar-wrap {
+    background: @dv-n-800;
+
+    .action-bar-cover {
+      background-image: linear-gradient(to right, fade(@dv-n-800, 0%) 0%, @dv-n-800 10%);
+    }
+  }
+  .RichEditor-toolbar .inner {
+    background: @dv-n-750;
+  }
+
+  &.focused {
+    background-color: @dv-n-750;
+    border-color: fade(@dv-accent, 45%);
+    box-shadow: 0 0 0 1px fade(@dv-accent, 30%), @dv-shadow-2;
+
+    .show-more-fade {
+      background: linear-gradient(to right, fade(@dv-n-750, 0%) 0%, @dv-n-750 40%);
+    }
+    .composer-action-bar-wrap {
+      background: @dv-n-800;
+
+      .action-bar-cover {
+        background-image: linear-gradient(to right, fade(@dv-n-800, 0%) 0%, @dv-n-800 10%);
+      }
+    }
+    .RichEditor-toolbar .inner {
+      background: @dv-n-750;
+    }
+  }
+}
+
+// Popout composer window
+.composer-full-window {
+  .composer-inner-wrap .composer-action-bar-wrap {
+    background: @dv-n-800;
+
+    .action-bar-cover {
+      background-image: linear-gradient(to right, fade(@dv-n-800, 0%) 0%, @dv-n-800 10%);
+    }
+  }
+  .RichEditor-toolbar .inner {
+    background: @dv-n-850;
+  }
+}
+
+.composer-inner-wrap {
+  .composer-action-bar-wrap {
+    border-top: 1px solid @dv-line;
+    border-radius: 0 0 @dv-radius-lg @dv-radius-lg;
+    box-shadow: none;
+
+    .btn.btn-toolbar:not(.btn-emphasis) {
+      border-radius: @dv-radius;
+      transition: background-color @dv-fast @dv-ease;
+
+      &:hover {
+        background: @dv-hover;
+      }
+    }
+  }
+
+  .composer-header-actions .action {
+    border-radius: @dv-radius-sm;
+    transition: color @dv-fast @dv-ease;
+  }
+
+  .composer-field-label {
+    color: @dv-text-faint;
+  }
+
+  .composer-subject input {
+    font-size: 15px;
+    font-weight: @font-weight-medium;
+  }
+
+  .composer-drop-cover {
+    background: fade(@dv-n-900, 85%);
+    border: 2px dashed fade(@dv-accent, 55%);
+    border-radius: @dv-radius-lg;
+
+    .centered {
+      color: @dv-text;
+
+      img {
+        background-color: @dv-accent;
+      }
+    }
+  }
+}
+
+// From / signature selectors in the header behave like ghost buttons
+.composer-participant-field .button-dropdown {
+  .primary-item,
+  .only-item {
+    background: transparent;
+    box-shadow: none;
+    border-radius: @dv-radius;
+    color: @dv-text;
+  }
+  &:hover .primary-item,
+  &:hover .only-item {
+    background: @dv-hover;
+  }
+}
+.message-item-white-wrap.composer-outer-wrap .composer-participant-field .dropdown-component .signature-button-dropdown .only-item,
+.message-item-white-wrap.composer-outer-wrap.focused .composer-participant-field .dropdown-component .only-item,
+.composer-full-window .message-item-white-wrap.composer-outer-wrap .composer-participant-field .dropdown-component .signature-button-dropdown .only-item {
+  background: transparent;
+}
+
+// Recipient tokens
+.tokenizing-field {
+  .tokenizing-field-label {
+    color: @dv-text-faint;
+  }
+  .placeholder {
+    color: @dv-text-faint;
+  }
+
+  .token {
+    background: @dv-n-650;
+    border-radius: @dv-radius;
+    box-shadow: inset 0 0 0 1px @dv-line;
+    color: @dv-text;
+    transition: background-color @dv-fast @dv-ease, box-shadow @dv-fast @dv-ease;
+
+    .action {
+      color: @dv-text-muted;
+
+      img {
+        background-color: @dv-text-muted;
+      }
+    }
+    &:hover {
+      background: @dv-n-600;
+      box-shadow: inset 0 0 0 1px @dv-line-strong;
+    }
+    &.selected,
+    &.dragging {
+      background: @dv-accent-fill;
+      border: 1px solid fade(#ffffff, 12%);
+      border-top: 1px solid fade(#ffffff, 18%);
+      box-shadow: none;
+      color: @dv-on-accent;
+
+      .action {
+        color: fade(#ffffff, 80%);
+
+        img {
+          background-color: fade(#ffffff, 80%);
+        }
+      }
+    }
+    &.invalid {
+      border-bottom-color: @dv-danger;
+
+      &:hover {
+        box-shadow: inset 0 0 0 1px fade(@dv-danger, 50%);
+      }
+    }
+    &.invalid.selected,
+    &.invalid.dragging {
+      background: fade(@dv-danger, 35%);
+      border-color: fade(@dv-danger, 60%);
+      border-top-color: fade(@dv-danger, 60%);
+    }
+  }
+
+  // Autocomplete popover
+  .content-container {
+    background-color: @dv-n-700;
+    border-color: @dv-line-strong;
+    border-radius: @dv-radius-lg;
+    box-shadow: @dv-shadow-3;
+    overflow: hidden;
+  }
+}
+
+// Editor
+.RichEditor-root blockquote,
+.RichEditor-root .uneditable blockquote {
+  border-left-color: fade(#ffffff, 18%);
+  color: @dv-text-secondary;
+}
+.RichEditor-root .uneditable:hover {
+  border-color: @dv-line-strong;
+}
+
+.RichEditor-toolbar {
+  .floating-container {
+    border-bottom-color: @dv-line;
+  }
+  .divider {
+    border-right-color: @dv-line;
+  }
+  button {
+    color: @dv-text-muted;
+    border-radius: @dv-radius-sm;
+    transition: color @dv-fast @dv-ease, background-color @dv-fast @dv-ease;
+
+    &:hover {
+      color: @dv-text;
+      background: @dv-hover;
+    }
+  }
+  button.active {
+    color: @dv-accent;
+    background: @dv-accent-tint;
+  }
+  .dropdown {
+    background: @dv-n-700;
+    border-radius: @dv-radius-lg;
+    box-shadow: @dv-ring, @dv-shadow-3;
+  }
+  .color-picker > button {
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px @dv-line-strong;
+  }
+}
+
+.emoji-picker {
+  background: @dv-n-700;
+  border-radius: @dv-radius-lg;
+  box-shadow: @dv-ring, @dv-shadow-3;
+}
+.emoji-button-popover .emoji-tabs {
+  border-bottom-color: @dv-line;
+
+  .emoji-tab {
+    background-color: @dv-text-faint;
+
+    &.active {
+      background-color: @dv-accent;
+    }
+  }
+}
+
+// =============================================================================
+//  6. Controls
+// =============================================================================
+
+// --- Buttons ---------------------------------------------------------------
+.btn {
+  background: @btn-default-bg-color;
+  border: 0;
+  border-radius: @dv-radius;
+  box-shadow: @dv-btn-shadow;
+  color: @btn-default-text-color;
+  font-weight: @font-weight-medium;
+  transition: background-color @dv-fast @dv-ease, box-shadow @dv-fast @dv-ease, color @dv-fast @dv-ease;
+
+  img.content-mask {
+    background-color: @dv-text-secondary;
+  }
+
+  &:hover {
+    background: @dv-n-650;
+  }
+  &:active {
+    background: @dv-n-600;
+    box-shadow: inset 0 0 0 1px @dv-line-strong;
+  }
+  &:focus-visible {
+    outline: 0;
+    box-shadow: inset 0 0 0 1px fade(@dv-accent, 70%), @dv-focus-ring;
+  }
+
+  &.btn-disabled {
+    background: fade(@btn-default-bg-color, 50%);
+    box-shadow: inset 0 0 0 1px @dv-line;
+    color: @dv-text-faint;
+
+    &:active {
+      background: fade(@btn-default-bg-color, 50%);
+    }
+  }
+
+  &.btn-emphasis {
+    background: @dv-accent-fill;
+    border: 0;
+    box-shadow: @dv-fill-shadow;
+    color: @dv-on-accent;
+    font-weight: @font-weight-semi-bold;
+
+    img.content-mask {
+      background-color: @dv-on-accent;
+    }
+    &:before {
+      content: none;
+    }
+    &:hover {
+      background: @dv-accent-fill-hover;
+    }
+    &:active {
+      background: @dv-accent-fill-active;
+    }
+    &.btn-disabled {
+      opacity: 0.45;
+    }
+  }
+
+  &.btn-danger,
+  .btn-destructive {
+    background: @dv-danger;
+    box-shadow: @dv-fill-shadow;
+    color: #ffffff;
+
+    &:hover {
+      background: lighten(@dv-danger, 5%);
+    }
+  }
+
+  &.btn-action {
+    background: @dv-success;
+    box-shadow: @dv-fill-shadow;
+    color: #ffffff;
+  }
+}
+
+// Icon-only buttons stay ghost (core resets them too, but `.btn` above wins ties)
+.btn-icon,
+.btn.btn-icon {
+  background: transparent;
+  border: 0;
+  border-radius: @dv-radius-sm;
+  box-shadow: none;
+  color: @dv-text-muted;
+  font-weight: @font-weight-normal;
+
+  img.content-mask {
+    background-color: @dv-text-muted;
+  }
+  &:hover {
+    background: transparent;
+    box-shadow: none;
+    color: @dv-accent;
+
+    img.content-mask {
+      background-color: @dv-accent;
+    }
+  }
+  &:active {
+    background: transparent;
+    box-shadow: none;
+    color: @dv-accent-strong;
+
+    img.content-mask {
+      background-color: @dv-accent-strong;
+    }
+  }
+  &:focus-visible {
+    box-shadow: @dv-focus-ring;
+  }
+}
+
+// Toolbar buttons are ghost buttons; only Compose carries an accent tint
+.sheet-toolbar {
+  .btn-toolbar {
+    height: 26px;
+    line-height: 26px;
+    margin-top: 4px;
+    padding: 0 9px;
+    background: transparent;
+    border: 0;
+    border-radius: @dv-radius;
+    box-shadow: none;
+    color: @dv-text-secondary;
+
+    img.content-mask {
+      background-color: fade(@dv-text-strong, 72%);
+      transition: background-color @dv-fast @dv-ease;
+    }
+
+    &:hover {
+      background: @dv-hover;
+      color: @dv-text;
+
+      img.content-mask {
+        background-color: @dv-text-strong;
+      }
+    }
+    &:active {
+      background: @dv-active;
+
+      img.content-mask {
+        background-color: @dv-text-strong;
+      }
+    }
+    &.btn-disabled {
+      background: transparent;
+      opacity: 0.4;
+    }
+    &.narrow {
+      padding: 0 6px;
+    }
+  }
+
+  .button-group {
+    margin-left: 8px;
+    gap: 2px;
+
+    .btn.btn-toolbar {
+      &:not(:last-child),
+      &:not(:first-child),
+      &:last-child {
+        border: 0;
+        border-radius: @dv-radius;
+      }
+    }
+  }
+
+  .btn.btn-toolbar.item-compose {
+    padding: 0 10px;
+    background: @dv-accent-tint;
+
+    img.content-mask {
+      background-color: @dv-accent;
+    }
+    &:hover {
+      background: @dv-accent-tint-strong;
+    }
+  }
+}
+
+body.platform-linux .toolbar-menu-control .btn-toolbar {
+  padding: 0 10px;
+  line-height: 26px;
+}
+
+// Split buttons (Send, signatures, preferences)
+.button-dropdown {
+  .primary-item,
+  .only-item,
+  .secondary-picker {
+    background: @btn-default-bg-color;
+    border: 0;
+    box-shadow: @dv-btn-shadow;
+    color: @dv-text;
+    transition: background-color @dv-fast @dv-ease;
+
+    &:hover {
+      background: @dv-n-650;
+    }
+    &:active {
+      background: @dv-n-600;
+    }
+  }
+  .primary-item {
+    border-radius: @dv-radius 0 0 @dv-radius;
+  }
+  .only-item {
+    border-radius: @dv-radius;
+  }
+  .secondary-picker {
+    padding: 0 6px;
+    border-radius: 0 @dv-radius @dv-radius 0;
+    box-shadow: @dv-btn-shadow;
+  }
+  img {
+    background-color: @dv-text-secondary;
+  }
+
+  .secondary-items {
+    background-color: @dv-n-700;
+    border-radius: @dv-radius-lg;
+    box-shadow: @dv-ring, @dv-shadow-3;
+    overflow: hidden;
+
+    .menu .item {
+      padding: 6px 12px;
+
+      &:hover {
+        background-color: @dv-hover;
+      }
+      &.selected {
+        background-color: inherit;
+        color: @dv-text;
+      }
+    }
+  }
+  &.open.open-up .secondary-items,
+  &.open.open-down .secondary-items {
+    border-radius: @dv-radius-lg;
+    box-shadow: @dv-ring, @dv-shadow-3;
+  }
+  &.open.open-down .secondary-items {
+    transform: translate(0, 4px);
+  }
+  &.open.open-up .secondary-items {
+    transform: translate(0, -4px);
+  }
+
+  &.btn-emphasis {
+    .primary-item,
+    .secondary-picker,
+    .only-item {
+      background: @dv-accent-fill;
+      border: 0;
+      box-shadow: @dv-fill-shadow;
+      color: @dv-on-accent;
+      font-weight: @font-weight-semi-bold;
+
+      img.content-mask {
+        background-color: @dv-on-accent;
+      }
+      &:before {
+        content: none;
+      }
+      &:hover {
+        background: @dv-accent-fill-hover;
+      }
+      &:active {
+        background: @dv-accent-fill-active;
+      }
+    }
+    .secondary-picker {
+      box-shadow: inset 1px 0 0 fade(#000000, 22%), @dv-fill-shadow;
+    }
+  }
+}
+
+// --- Inputs ----------------------------------------------------------------
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+textarea,
+select {
+  background: @input-bg;
+  border: 1px solid @input-border-color;
+  border-radius: @dv-radius;
+  color: @dv-text;
+  transition: border-color @dv-fast @dv-ease, box-shadow @dv-fast @dv-ease;
+
+  &::placeholder {
+    color: @dv-text-faint;
+  }
+  &:focus {
+    border: 1px solid fade(@dv-accent, 70%);
+    box-shadow: @dv-focus-ring;
+    outline: 0;
+  }
+  &:disabled {
+    background: @input-bg-disabled;
+    color: @dv-text-muted;
+    opacity: 1;
+  }
+}
+
+select {
+  padding: 2px 6px;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: @dv-accent;
+}
+
+// --- Thread search ---------------------------------------------------------
+.thread-search-bar {
+  height: 26px;
+  line-height: 26px;
+  margin-top: 4px;
+  padding: 0 6px;
+  background: @input-bg;
+  border-radius: @dv-radius;
+  box-shadow: inset 0 0 0 1px @dv-line-strong;
+  transition: box-shadow @dv-fast @dv-ease;
+
+  &:focus,
+  &:focus-within {
+    border: 0;
+    border-radius: @dv-radius;
+    box-shadow: inset 0 0 0 1px fade(@dv-accent, 70%), @dv-focus-ring;
+  }
+
+  .search-accessory {
+    opacity: 0.55;
+
+    &.clear {
+      opacity: 0.7;
+    }
+  }
+
+  &.placeholder .tokenizing-contenteditable .layer-tokens {
+    color: @dv-text-faint;
+  }
+
+  .suggestions {
+    top: 26px;
+    margin-top: 4px;
+    padding: 4px 0;
+    background: @dv-n-700;
+    border-radius: @dv-radius-lg;
+    box-shadow: @dv-ring, @dv-shadow-3;
+    overflow: hidden;
+
+    .suggestion {
+      padding: 6px 12px;
+      color: @dv-text-secondary;
+
+      &.selected {
+        background-color: @dv-accent-fill;
+        color: @dv-on-accent;
+
+        .suggestion-token {
+          color: @dv-on-accent;
+        }
+      }
+      &:hover:not(.selected) {
+        background-color: @dv-hover;
+      }
+    }
+    .footer {
+      margin-top: 4px;
+      padding: 6px 12px;
+      background-color: fade(#ffffff, 3%);
+      border-top: 1px solid @dv-line;
+      color: @dv-text-muted;
+    }
+  }
+}
+
+// --- Menus & popovers ------------------------------------------------------
+.menu {
+  .header-container {
+    padding: 6px;
+    background-color: @dv-n-700;
+    border-bottom: 1px solid @dv-line;
+  }
+  .content-container {
+    background: @dv-n-700;
+  }
+
+  .item {
+    padding: 5px 12px;
+    color: @dv-text;
+    transition: background-color @dv-fast @dv-ease;
+
+    .secondary {
+      color: @dv-text-muted;
+    }
+  }
+  .item.divider {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: @dv-text-faint;
+  }
+  .item.selected,
+  .item:active {
+    background-color: @dv-accent-fill;
+    color: @dv-on-accent;
+
+    .primary {
+      color: @dv-on-accent;
+    }
+    .secondary {
+      color: fade(#ffffff, 70%);
+    }
+  }
+  .item:not(.active):not(.selected):hover {
+    background-color: @dv-hover;
+  }
+}
+
+.dropdown-menu .menu,
+.category-picker-popover .menu,
+.category-picker-dropdown .menu {
+  background: @dv-n-700;
+  border-radius: @dv-radius-lg;
+  box-shadow: @dv-ring, @dv-shadow-3;
+  overflow: hidden;
+}
+.category-picker-popover .menu .item.divider,
+.category-picker-dropdown .menu .item.divider {
+  height: 1px;
+  margin: 4px 0;
+  background-color: @dv-line;
+}
+
+.fixed-popover-container {
+  .fixed-popover {
+    background-color: @dv-n-700;
+    border-radius: @dv-radius-lg;
+    box-shadow: @dv-ring, @dv-shadow-3;
+    color: @dv-text;
+  }
+  .fixed-popover-pointer {
+    background-color: @dv-n-700;
+  }
+  .fixed-popover-pointer.shadow {
+    background-color: rgba(0, 0, 0, 0.35);
+  }
+  &.popout {
+    animation: popout-animation @dv-normal @dv-ease;
+  }
+}
+
+.snooze-popover {
+  .snooze-row {
+    .snooze-item {
+      transition: background-color @dv-fast @dv-ease;
+
+      &:hover {
+        background-color: @dv-hover;
+      }
+      &:active {
+        background-color: @dv-active;
+      }
+      & + .snooze-item {
+        border-left-color: @dv-line;
+      }
+    }
+    & + .snooze-row {
+      border-top-color: @dv-line;
+    }
+  }
+  .snooze-input {
+    border-top-color: @dv-line;
+  }
+}
+
+.scroll-tooltip {
+  background: @dv-n-700;
+  border-color: @dv-line-strong;
+  border-radius: @dv-radius;
+  box-shadow: @dv-shadow-2;
+  color: @dv-text;
+}
+.scroll-tooltip:after {
+  border-left-color: @dv-n-700;
+}
+.scroll-tooltip:before {
+  border-left-color: @dv-line-strong;
+}
+
+// Legacy floating text toolbar (link editing)
+.contenteditable-container .floating-toolbar {
+  background: @dv-n-700;
+  box-shadow: @dv-ring, @dv-shadow-3;
+  color: @dv-text;
+
+  .toolbar-pointer-container div {
+    background-color: @dv-n-700;
+
+    &.shadow {
+      background-color: rgba(0, 0, 0, 0.35);
+    }
+  }
+  .floating-toolbar-input {
+    background: transparent;
+    color: @dv-text;
+  }
+  .btn {
+    color: @dv-text-secondary;
+    box-shadow: none;
+  }
+  button.btn.toolbar-btn {
+    border-right-color: @dv-line;
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+// --- Switch ----------------------------------------------------------------
+.slide-switch {
+  background-color: @dv-n-600;
+  box-shadow: inset 0 0 0 1px @dv-line-strong;
+
+  .handle {
+    background-color: #eceef3;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  }
+  &.active {
+    background-color: @dv-accent-fill;
+    box-shadow: none;
+  }
+}
+
+// --- Undo toast ------------------------------------------------------------
+.undo-redo-toast {
+  .content {
+    background: @dv-n-700;
+    box-shadow: @dv-ring, @dv-shadow-3;
+    opacity: 1;
+  }
+  .message {
+    color: @dv-text;
+  }
+  .action {
+    background: fade(#ffffff, 8%);
+    border: 1px solid @dv-line-strong;
+    transition: background-color @dv-fast @dv-ease;
+
+    img {
+      background-color: @dv-text-secondary;
+    }
+    .send-action-text,
+    .undo-action-text {
+      color: @dv-text;
+    }
+    &:hover {
+      background: fade(#ffffff, 12%);
+      border: 1px solid @dv-line-strong;
+    }
+    &:active {
+      background: fade(#ffffff, 16%);
+      border: 1px solid @dv-line-strong;
+    }
+  }
+}
+
+.spinner > div {
+  border-color: @dv-text-muted;
+}
+
+// =============================================================================
+//  7. Preferences & modals
+// =============================================================================
+
+.preferences-wrap {
+  background-color: @dv-n-850;
+
+  h6 {
+    font-size: 11px;
+    font-weight: @font-weight-semi-bold;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: @dv-text-muted;
+  }
+
+  .container-preference-tabs {
+    background-color: @dv-n-900;
+    border-bottom: 1px solid @dv-line;
+
+    .preferences-tabs {
+      background-color: @dv-n-900;
+
+      .item {
+        border-radius: @dv-radius-lg @dv-radius-lg 0 0;
+        color: @dv-text-muted;
+        transition: background-color @dv-fast @dv-ease, color @dv-fast @dv-ease;
+
+        &:hover {
+          background: @dv-hover;
+          color: @dv-text-secondary;
+        }
+        &.active {
+          background: @dv-n-850;
+          box-shadow: inset 0 0 0 1px @dv-line;
+          color: @dv-text;
+        }
+      }
+    }
+  }
+
+  .preferences-content {
+    background-color: @dv-n-850;
+  }
+
+  .platform-note {
+    background: fade(@dv-accent, 8%);
+    border-left-color: @dv-accent;
+    border-radius: 0 @dv-radius @dv-radius 0;
+  }
+
+  .container-general .local-data .btn {
+    border: 0;
+    border-radius: @dv-radius;
+    box-shadow: @dv-btn-shadow;
+  }
+
+  .container-appearance .appearance-mode-switch .appearance-mode {
+    background-color: @dv-n-750;
+    border: 1px solid @dv-line-strong;
+    border-radius: @dv-radius-lg;
+    transition: border-color @dv-fast @dv-ease;
+
+    img {
+      background-color: @dv-text-muted;
+    }
+  }
+  .container-appearance .appearance-mode-switch .appearance-mode.active {
+    border: 1px solid @dv-accent;
+  }
+}
+
+.nylas-editable-list {
+  .items-wrapper {
+    background-color: @input-bg;
+    border-color: @dv-line-strong;
+    border-radius: @dv-radius @dv-radius 0 0;
+
+    .selected {
+      background-color: fade(#ffffff, 10%);
+      color: @dv-text;
+    }
+    .editable-item {
+      border-bottom-color: @dv-line-subtle;
+    }
+  }
+  .buttons-wrapper {
+    background-color: @dv-n-750;
+    border-color: @dv-line-strong;
+    border-radius: 0 0 @dv-radius @dv-radius;
+
+    .btn-editable-list {
+      border-right-color: @dv-line;
+      color: @dv-text-secondary;
+
+      &:active {
+        background-color: @dv-n-650;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.modal-container.animate {
+  background-color: fade(@dv-n-950, 62%);
+}
+.modal-container .modal {
+  background-color: @dv-n-700 !important;
+  border-radius: 10px !important;
+  box-shadow: @dv-ring, @dv-shadow-3 !important;
+  color: @dv-text;
+}
+
+.theme-picker {
+  h4 {
+    color: @dv-text-strong !important;
+  }
+  h4 + div {
+    color: @dv-text-muted !important;
+  }
+  .auto-theme-selectors .auto-theme-selector {
+    label {
+      color: @dv-text-secondary;
+    }
+    select {
+      background: @input-bg;
+      border: 1px solid @dv-line-strong;
+      border-radius: @dv-radius-sm;
+      color: @dv-text;
+    }
+  }
+}
+
+// =============================================================================
+//  8. Blurred window (app in background)
+// =============================================================================
+
+body.is-blurred {
+  .sheet-toolbar-container {
+    background: @dv-n-850;
+    background-image: none;
+
+    .btn.btn-toolbar {
+      box-shadow: none;
+    }
+  }
+  .toolbar-RootSidebar {
+    background-color: @dv-n-900;
+  }
+
+  .thread-list .list-item.focused,
+  .thread-list .list-item.focused:hover,
+  .thread-list.handler-split .list-item.selected,
+  .thread-list.handler-split .list-item.selected:hover,
+  .draft-list .list-item.focused,
+  .draft-list .list-item.focused:hover {
+    background-color: @dv-n-700;
+    background-image: none;
+    border-left-color: fade(#ffffff, 30%);
+    border-bottom-color: @dv-line;
+    color: @dv-text;
+  }
+  .thread-list .list-item.selected:not(.focused),
+  .draft-list .list-item.selected:not(.focused) {
+    background-color: @dv-n-800;
+    border-bottom-color: @dv-line;
+  }
+
+  .tokenizing-field .token:not(.invalid) {
+    background: @dv-n-650;
+    color: @dv-text-secondary;
+  }
+}
+body.platform-linux.is-blurred .sheet-toolbar-container {
+  background: @dv-n-850;
+  background-image: none;
+}
+
+// =============================================================================
+//  9. Bundled plugins
+// =============================================================================
+
+// Send reminders
+.send-reminders-header {
+  background: fade(@dv-reminder, 12%);
+  border-bottom: 1px solid fade(@dv-reminder, 30%);
+  color: lighten(@dv-reminder, 10%);
+
+  img {
+    background-color: lighten(@dv-reminder, 10%);
+  }
+}
+.thread-list .timestamp.send-reminders-thread-timestamp {
+  color: @dv-text-muted;
+
+  img {
+    background-color: @dv-text-muted;
+  }
+}
+.thread-list .list-item.thread-list-reminder-item,
+.thread-list .list-item.thread-list-reminder-item.unread,
+.thread-list .list-item.thread-list-reminder-item.unread:not(.focused):not(.selected) {
+  background-color: mix(@dv-reminder, @dv-n-850, 12%);
+}
+
+// Link tracking
+.link-tracking-panel {
+  background: fade(@dv-accent, 10%);
+  border-color: fade(@dv-accent, 30%);
+
+  td {
+    border-top-color: @dv-line;
+    border-bottom-color: @dv-line;
+  }
+}
+.link-tracking-icon img.content-mask {
+  background-color: @dv-text-muted;
+}
+.link-tracking-icon img.content-mask.clicked {
+  background-color: @dv-text-secondary;
+}
+
+// Templates
+.template-status-bar {
+  background-color: fade(#f0c419, 12%);
+  border-color: fade(#f0c419, 35%);
+  color: #f2d27a;
 }

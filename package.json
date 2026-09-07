@@ -3,8 +3,8 @@
   "title": "Dark Vibe",
   "displayName": "Dark Vibe",
   "theme": "ui",
-  "version": "2.0.0",
-  "description": "A stunning, modern dark theme for Mailspring, featuring a vibrant blue accent, subtle textures, and glowing interactive elements for an ultra-stylish email experience.",
+  "version": "2.1.0",
+  "description": "A refined dark theme for Mailspring: cool neutral surfaces, a vibrant blue accent, calm contrast and one consistent design system across the sidebar, thread list, reading pane and composer.",
   "license": "GPL-3.0",
   "engines": {
     "mailspring": "*"

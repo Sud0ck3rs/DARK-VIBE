@@ -1,88 +1,213 @@
 /*
-Include the standard variables from Mailspring's base theme:
+DARK-VIBE — design tokens and Mailspring variable overrides.
+
+Mailspring imports this file into every core stylesheet (as `ui-variables`)
+and into the theme-picker preview, so it must contain VARIABLES ONLY (no rules).
+Base variables:
 https://github.com/Foundry376/Mailspring/blob/master/app/static/style/base/ui-variables.less
 */
 @import "base/ui-variables";
 
-// =================================================================
-//  MATERIAL-INSPIRED DARK PALETTE
-// =================================================================
+// =============================================================================
+//  1. DESIGN TOKENS  (theme-specific, `dv-` prefix)
+// =============================================================================
 
-//  Greys & Base Tones
+// --- Neutral surfaces: cool dark greys, ~2% luminance per step ----------------
+@dv-n-950: #0c0d10; // scrims
+@dv-n-900: #111216; // navigation chrome (sidebar)
+@dv-n-850: #15171b; // content base: thread list, reading pane, toolbars
+@dv-n-800: #1a1c21; // unread rows, secondary bars
+@dv-n-750: #1e2126; // cards, composer
+@dv-n-700: #23262c; // buttons, menus, popovers
+@dv-n-650: #2a2e35; // hover on elevated surfaces, tokens
+@dv-n-600: #33373f; // pressed on elevated surfaces
+
+// --- Accent -------------------------------------------------------------------
+@dv-accent: #64b5f6;          // vibrant blue: text, icons, outlines, tints
+@dv-accent-strong: #3f9be9;   // hover / active for accent text
+@dv-accent-fill: #1b6fd0;     // solid fills carrying white text (4.9:1)
+@dv-accent-fill-hover: #2a7ddb;
+@dv-accent-fill-active: #185fb3;
+@dv-on-accent: #ffffff;       // text on @dv-accent-fill
+@dv-on-accent-light: #0b1626; // text on @dv-accent (badges)
+
+// --- Semantic -----------------------------------------------------------------
+@dv-success: #3fbf7f;
+@dv-warning: #e9a93b;
+@dv-danger: #e5565a;
+@dv-reminder: #8b6cf0;
+
+// --- Text ---------------------------------------------------------------------
+@dv-text: #e8eaf0;
+@dv-text-strong: #f5f6f9;
+@dv-text-secondary: fade(@dv-text, 72%);
+@dv-text-muted: fade(@dv-text, 50%);
+@dv-text-faint: fade(@dv-text, 36%);
+
+// --- Lines --------------------------------------------------------------------
+@dv-line-subtle: fade(#ffffff, 6%);  // row dividers
+@dv-line: fade(#ffffff, 9%);         // panel separators, card outlines
+@dv-line-strong: fade(#ffffff, 14%); // inputs, buttons, floating surfaces
+
+// --- Interaction overlays (translucent, for ghost controls) -------------------
+@dv-hover: fade(#ffffff, 5%);
+@dv-active: fade(#ffffff, 9%);
+@dv-accent-tint: fade(@dv-accent, 12%);
+@dv-accent-tint-strong: fade(@dv-accent, 20%);
+
+// --- Shape --------------------------------------------------------------------
+@dv-radius-sm: 4px;
+@dv-radius: 6px;
+@dv-radius-lg: 8px;
+@dv-radius-pill: 999px;
+
+// --- Elevation ----------------------------------------------------------------
+@dv-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.32);
+@dv-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.32), 0 1px 3px rgba(0, 0, 0, 0.28);
+@dv-shadow-3: 0 12px 32px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+@dv-ring: 0 0 0 1px @dv-line-strong; // hairline outline for floating surfaces
+@dv-focus-ring: 0 0 0 3px fade(@dv-accent, 18%);
+@dv-btn-shadow: inset 0 0 0 1px @dv-line-strong, 0 1px 1px rgba(0, 0, 0, 0.25);
+@dv-fill-shadow: inset 0 1px 0 fade(#ffffff, 12%), 0 1px 2px rgba(0, 0, 0, 0.3);
+
+// --- Motion -------------------------------------------------------------------
+@dv-ease: cubic-bezier(0.2, 0, 0, 1);
+@dv-fast: 110ms;
+@dv-normal: 160ms;
+
+// =============================================================================
+//  2. MAILSPRING VARIABLES
+// =============================================================================
+
+//== Greys (inverted for a dark UI, like the built-in Dark theme)
 @gray-base: #ffffff;
 @gray-darker: darken(@gray-base, 15%);
 @gray-dark: darken(@gray-base, 25%);
 @gray: darken(@gray-base, 40%);
 @gray-light: darken(@gray-base, 50%);
 @gray-lighter: darken(@gray-base, 93%);
-@white: #0a0a0a;
+@white: #ffffff; // stays white: switch handle, image captions
 
-//  Primary Accent Color
-@accent-primary: #64b5f6;
-@accent-primary-dark: darken(@accent-primary, 12%);
+//== Accent
+@blue: @dv-accent;
+@blue-dark: @dv-accent-strong;
+@blue-light: @dv-accent;
+@accent-primary: @dv-accent;
+@accent-primary-dark: @dv-accent-strong;
+@component-active-color: @dv-accent;
+@component-active-bg: @dv-on-accent-light;
 
-//  Background Colors
-@background-primary: #121212;
-@background-off-primary: #1a1d24;
-@background-secondary: #1e222b;
-@background-tertiary: #2b303d;
+//== Surfaces
+@background-primary: @dv-n-750;     // "content surface": cards, composer, popups
+@background-off-primary: @dv-n-800; // secondary bars (composer footer, activity)
+@background-secondary: @dv-n-700;   // menus, popovers, tokens
+@background-tertiary: @dv-n-600;
+@background-gradient: none;         // no light backing behind quick-action icons
 
-//  Border Colors
-@border-color-primary: fade(#ffffff, 9%);
-@border-color-secondary: fade(#ffffff, 12%);
-@border-color-tertiary: fade(#ffffff, 16%);
-@border-color-divider: @border-color-secondary;
+//== Semantic
+@color-info: @dv-accent;
+@color-success: @dv-success;
+@color-warning: @dv-warning;
+@color-error: @dv-danger;
+@color-danger: @dv-danger;
 
-//  Text Colors
-@text-color: #e6ebf4;
-@text-color-subtle: fadeout(@text-color, 36%);
-@text-color-very-subtle: fadeout(@text-color, 56%);
+//== Borders
+@border-color-primary: @dv-line;
+@border-color-secondary: @dv-line;
+@border-color-tertiary: @dv-line-strong;
+@border-color-divider: @dv-line;
+
+//== Text
+@text-color: @dv-text;
+@text-color-subtle: @dv-text-secondary;
+@text-color-very-subtle: @dv-text-muted;
 @text-color-inverse: #ffffff;
-@text-color-inverse-subtle: fadeout(@text-color-inverse, 20%);
-@text-color-inverse-very-subtle: fadeout(@text-color-inverse, 50%);
-@text-color-heading: #ffffff;
+@text-color-inverse-subtle: fade(#ffffff, 80%);
+@text-color-inverse-very-subtle: fade(#ffffff, 55%);
+@text-color-heading: @dv-text-strong;
+@text-color-link: @dv-accent;
+@text-color-link-hover: lighten(@dv-accent, 8%);
+@text-color-link-active: @dv-accent-strong;
+@text-color-selected: @text-color-inverse;
+@text-color-search-match: rgba(255, 214, 10, 0.32);
+@text-color-search-current-match: rgba(255, 139, 26, 0.55);
 
-//  Links
-@text-color-link: @accent-primary;
-@text-color-link-hover: lighten(@accent-primary, 10%);
-@text-color-link-active: @accent-primary-dark;
-
-//  UI Element Colors
-@btn-default-bg-color: #232935;
-@dropdown-default-bg-color: #1f2430;
-@input-bg: #20252f;
-@input-border: @border-color-divider;
-
-@list-bg: #171b22;
-@list-border: @border-color-primary;
-@list-selected-color: @text-color-inverse;
-@list-focused-color: @text-color;
-@list-selected-bg: mix(@accent-primary, @list-bg, 20%);
-@list-focused-bg: mix(@accent-primary, @list-bg, 33%);
-
-@toolbar-background-color: @background-secondary;
-@panel-background-color: @background-off-primary;
-
-//  Special Effect Variables
-@glow-color: fade(@accent-primary, 40%);
-
-// =================================================================
-//  MATERIAL-INSPIRED TYPOGRAPHY
-// =================================================================
-@font-family: "Roboto", "Noto Sans", "Segoe UI", -apple-system,
-  BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-
+//== Typography
+// Nylas-Pro ships with Mailspring (weights 200–600) and renders identically on
+// every machine; system fonts are fallbacks only.
+@font-family-sans-serif: "Nylas-Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  "Roboto", "Noto Sans", "Cantarell", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family: @font-family-sans-serif;
+@font-family-heading: @font-family-sans-serif;
 @font-size-base: 14px;
-@font-size-sm: 12px;
-@font-size-lg: 16px;
-
-@font-size-h1: 28px;
-@font-size-h2: 24px;
-@font-size-h3: 20px;
-
 @line-height-base: 1.5;
 @line-height-heading: 1.2;
 
-//  Shape tokens
-@border-radius-base: 10px;
-@border-radius-large: 14px;
+//== Shape
+@border-radius-base: @dv-radius;
+@border-radius-large: @dv-radius-lg;
+@border-radius-small: @dv-radius-sm;
+
+//== Shadows
+@standard-shadow-color: rgba(0, 0, 0, 0.4);
+@standard-shadow: @dv-shadow-2;
+@standard-shadow-up: 0 -4px 12px rgba(0, 0, 0, 0.32);
+@shadow-border: 0 0.5px 0 @dv-line-strong, 0 -0.5px 0 @dv-line-strong,
+  0.5px 0 0 @dv-line-strong, -0.5px 0 0 @dv-line-strong;
+
+//== Buttons
+@btn-border-color: @dv-line-strong;
+@btn-default-bg-color: @dv-n-700;
+@btn-default-text-color: @dv-text;
+@btn-icon-color: @dv-text-muted;
+@btn-action-bg-color: @dv-success;
+@btn-action-text-color: #ffffff;
+@btn-emphasis-bg-color: @dv-accent-fill;
+@btn-emphasis-text-color: @dv-on-accent;
+@btn-danger-bg-color: @dv-danger;
+@btn-danger-text-color: #ffffff;
+
+//== Dropdowns
+@dropdown-default-bg-color: @dv-n-700;
+@dropdown-default-text-color: @dv-text;
+@dropdown-default-border-color: @dv-line-strong;
+
+//== Inputs
+@input-bg: #17191e;
+@input-bg-disabled: @dv-n-800;
+@input-border-color: @dv-line-strong;
+@input-border-color-blurred: @dv-line;
+@input-font-size: 14px;
+
+//== Toolbar & sidebar
+@toolbar-background-color: @dv-n-850;
+@panel-background-color: @dv-n-900;
+@source-list-bg: @panel-background-color;
+@source-list-active-bg: @dv-accent-tint;
+@source-list-active-color: @dv-accent;
+
+//== Thread list
+@list-bg: @dv-n-850;
+@list-border: @dv-line-subtle;
+@list-hover-bg: #1c1f24;
+@list-unread-bg: @dv-n-800;
+@list-unread-hover-bg: #212429;
+@list-focused-color: @text-color-inverse;
+@list-focused-bg: mix(@dv-accent, @list-bg, 14%);
+@list-focused-glow: mix(@dv-accent, @list-bg, 26%);
+@list-focused-border: fade(@dv-accent, 28%);
+@list-selected-color: @dv-text;
+@list-selected-bg: mix(@dv-accent, @list-bg, 8%);
+@list-selected-border: fade(@dv-accent, 22%);
+
+//== Notifications
+@background-color-info: @dv-accent-fill;
+@background-color-success: #1f9d6a;
+@background-color-warning: #c47a12;
+@background-color-error: #c93b4e;
+@background-color-pending: #4b5058;
+
+//== Menus
+@menu-item-color-hover: @dv-hover;
+@menu-item-color-selected: @dv-accent-fill;
+@menu-text-color-selected: @dv-on-accent;
